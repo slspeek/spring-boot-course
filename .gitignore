@@ -25,3 +25,4 @@ replay_pid*
 
 target/
 /pom.xml.versionsBackup
+/postgres-db2/docker-compose.yaml

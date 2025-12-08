@@ -2,15 +2,16 @@
 name: frontoffice
 services:
   postgresql:
-    image: postgres:17.4
+    image: postgres:17.7
     # volumes:
     #   - ~/Downloads/frontoffice/frontoffice_db/postgresql/:/var/lib/postgresql/data/
     environment:
       - POSTGRES_USER=frontoffice_user
+      - POSTGRES_PASSWORD=frontoffice_user
       - POSTGRES_DB=frontoffice_db
       - POSTGRES_HOST_AUTH_METHOD=trust
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U $${POSTGRES_USER}']
+      test: ['CMD-SHELL', 'pg_isready --username=$${POSTGRES_USER} --dbname=$${POSTGRES_DB}']
       interval: 5s
       timeout: 5s
       retries: 10
@@ -18,3 +19,9 @@ services:
     # remove the "127.0.0.1:" prefix
     ports:
       - 127.0.0.1:5432:5432
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8082:8080

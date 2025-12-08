@@ -2,15 +2,18 @@
 spring:
   application:
     name: frontoffice
+  h2:
+    console:
+      enabled: true
+#      path: /h2-console
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/frontoffice_db
     username: frontoffice_user
-    password:
-    jpa:
-      database-platform: org.hibernate.dialect.PostgreSQLDialect
-      hibernate:
-        ddl-auto: update
-      generate-dll: true
-      show-sql: true
+    password: frontoffice_user
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
 
