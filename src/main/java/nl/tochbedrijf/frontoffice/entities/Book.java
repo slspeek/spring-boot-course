@@ -8,62 +8,69 @@ import jakarta.persistence.Id;
 @Entity
 public class Book {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String title;
-    private String author;
-    private String internalCode;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    public Book(){}
+  private String title;
+  private String author;
+  private String internalCode;
 
-    public Book(Long id, String title, String author, String internalCode) {
-        this.id = id;
-        this.title = title;
-        this.author = author;
-        this.internalCode = internalCode;
-    }
+  public Book() {}
 
-    public Long getId() {
-        return id;
-    }
+  public Book(Long id, String title, String author, String internalCode) {
+    this.id = id;
+    this.title = title;
+    this.author = author;
+    this.internalCode = internalCode;
+  }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+  public Long getId() {
+    return id;
+  }
 
-    public String getTitle() {
-        return title;
-    }
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+  public String getTitle() {
+    return title;
+  }
 
-    public String getAuthor() {
-        return author;
-    }
+  public void setTitle(String title) {
+    this.title = title;
+  }
 
-    public void setAuthor(String author) {
-        this.author = author;
-    }
+  public String getAuthor() {
+    return author;
+  }
 
-    public String getInternalCode() {
-        return internalCode;
-    }
+  public void setAuthor(String author) {
+    this.author = author;
+  }
 
-    public void setInternalCode(String internalCode) {
-        this.internalCode = internalCode;
-    }
+  public String getInternalCode() {
+    return internalCode;
+  }
 
-    @Override
-    public String toString() {
-        return "Book{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", author='" + author + '\'' +
-                ", internalCode='" + internalCode + '\'' +
-                '}';
-    }
+  public void setInternalCode(String internalCode) {
+    this.internalCode = internalCode;
+  }
+
+  @Override
+  public String toString() {
+    return "Book{"
+        + "id="
+        + id
+        + ", title='"
+        + title
+        + '\''
+        + ", author='"
+        + author
+        + '\''
+        + ", internalCode='"
+        + internalCode
+        + '\''
+        + '}';
+  }
 }
-

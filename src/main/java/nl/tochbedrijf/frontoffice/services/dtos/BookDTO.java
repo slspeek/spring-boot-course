@@ -1,46 +1,51 @@
 package nl.tochbedrijf.frontoffice.services.dtos;
 
 public class BookDTO {
-    private Long id;
-    private String author;
-    private String title;
+  private Long id;
+  private String author;
+  private String title;
 
-    public BookDTO(Long id, String title, String author) {
-        this.id = id;
-        this.author = author;
-        this.title = title;
-    }
+  public BookDTO(Long id, String title, String author) {
+    this.id = id;
+    this.author = author;
+    this.title = title;
+  }
 
-    public Long getId() {
-        return id;
-    }
+  public Long getId() {
+    return id;
+  }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-    public String getAuthor() {
-        return author;
-    }
+  public String getAuthor() {
+    return author;
+  }
 
-    public void setAuthor(String author) {
-        this.author = author;
-    }
+  public void setAuthor(String author) {
+    this.author = author;
+  }
 
-    public String getTitle() {
-        return title;
-    }
+  public String getTitle() {
+    return title;
+  }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+  public void setTitle(String title) {
+    this.title = title;
+  }
 
-    @Override
-    public String toString() {
-        return "BookDTO{" +
-                "id=" + id +
-                ", author='" + author + '\'' +
-                ", title='" + title + '\'' +
-                '}';
-    }
+  @Override
+  public String toString() {
+    return "BookDTO{"
+        + "id="
+        + id
+        + ", author='"
+        + author
+        + '\''
+        + ", title='"
+        + title
+        + '\''
+        + '}';
+  }
 }
