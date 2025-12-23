@@ -1,6 +1,6 @@
 package nl.tochbedrijf.frontoffice;
 
-import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import nl.tochbedrijf.frontoffice.entities.Book;
 import nl.tochbedrijf.frontoffice.repositories.BookRepository;
@@ -19,7 +19,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -37,7 +36,6 @@ class FrontofficeApplicationTests {
 
     @BeforeEach
     public void deleteAllBeforeTests() throws Exception {
-        System.out.println("Before each");
         bookRepository.deleteAll();
     }
 
@@ -65,34 +63,46 @@ class FrontofficeApplicationTests {
 
     @Test
     public void shouldInsertEntity() throws Exception {
-        mockMvc.perform(post("/api/book").header("Content-Type", "application/json").content(
-                "{ \"author\": \"George Orwell\", \"title\":\"Animal farm\"}")).andExpect(
-                status().isCreated());
+        MvcResult mvcResult = mockMvc.perform(post("/api/book").
+                header("Content-Type", "application/json").content(
+                String.format("{ \"author\": \"%s\", \"title\":\"%s\"}",
+                        animalFarm.getAuthor(),
+                        animalFarm.getTitle()))).andExpect(
+                status().isCreated()).andReturn();
 
-        List<Book> booksFromDatabase = bookRepository.findAll();
-        if (! booksFromDatabase.isEmpty() ){
-            assert booksFromDatabase.get(0).getAuthor().equals("George Orwell");
-            assert booksFromDatabase.get(0).getTitle().equals("Animal farm");
+        String content = mvcResult.getResponse().getContentAsString();
+        JsonObject jsonObject = JsonParser.parseString(content).getAsJsonObject();
+        Long id = jsonObject.get("id").getAsLong();
 
+        Optional<Book> bookFromDatabase = bookRepository.findById(id);
+        if (bookFromDatabase.isPresent() ){
+            assert bookFromDatabase.get().getAuthor().equals(animalFarm.getAuthor());
+            assert bookFromDatabase.get().getTitle().equals(animalFarm.getTitle());
         } else {
             throw new AssertionFailure("Expected a record, but none was found");
         }
+
     }
 
     @Test
-    public void shouldFailInsertEntity() throws Exception {
-        mockMvc.perform(post("/api/book").header("Content-Type", "application/json").content(
-                "{ \"AUTHORXXX\": \"George Orwell\", \"title\":\"Animal farm\"}")).andExpect(
-                status().isCreated());
+    public void shouldPartiallyInsertEntity() throws Exception {
+        MvcResult mvcResult = mockMvc.perform(post("/api/book").
+                header("Content-Type", "application/json").content(
+                        String.format("{ \"Wrong_Attribute_Name\": \"%s\", \"title\":\"%s\"}",
+                                animalFarm.getAuthor(),
+                                animalFarm.getTitle()))).andExpect(
+                status().isCreated()).andReturn();
 
-        List<Book> booksFromDatabase = bookRepository.findAll();
-        if (! booksFromDatabase.isEmpty() ){
-            assert booksFromDatabase.get(0).getAuthor()==null;
-            assert booksFromDatabase.get(0).getTitle().equals("Animal farm");
+        String content = mvcResult.getResponse().getContentAsString();
+        JsonObject jsonObject = JsonParser.parseString(content).getAsJsonObject();
+        Long id = jsonObject.get("id").getAsLong();
 
+        Optional<Book> bookFromDatabase = bookRepository.findById(id);
+        if (bookFromDatabase.isPresent() ){
+            assert bookFromDatabase.get().getAuthor()==null;
+            assert bookFromDatabase.get().getTitle().equals("Animal farm");
         } else {
             throw new AssertionFailure("Expected a record, but none was found");
         }
     }
-
 }
