@@ -23,9 +23,9 @@ public class BookService {
   }
 
   public BookDTO getBookById(Long id) {
-<span class="nc" id="L26">    Optional&lt;Book&gt; book = bookRepository.findById(id);</span>
-<span class="nc bnc" id="L27" title="All 2 branches missed.">    if (book.isPresent()) {</span>
-<span class="nc" id="L28">      return convertToDto(book.get());</span>
+<span class="fc" id="L26">    Optional&lt;Book&gt; book = bookRepository.findById(id);</span>
+<span class="pc bpc" id="L27" title="1 of 2 branches missed.">    if (book.isPresent()) {</span>
+<span class="fc" id="L28">      return convertToDto(book.get());</span>
     } else {
 <span class="nc" id="L30">      throw new RuntimeException(&quot;Book not found&quot;);</span>
     }
@@ -44,20 +44,18 @@ public class BookService {
   }
 
   public Book convertToEntity(BookDTO bookDTO) {
-<span class="fc" id="L47">    return new Book(</span>
-<span class="fc" id="L48">        bookDTO.getId(), bookDTO.getTitle(), bookDTO.getAuthor(), UUID.randomUUID().toString());</span>
+<span class="fc" id="L47">    return new Book(bookDTO.id(), bookDTO.title(), bookDTO.author(), UUID.randomUUID().toString());</span>
   }
 
   public BookDTO updateBook(Long id, BookDTO bookDTO) {
-<span class="nc" id="L52">    Optional&lt;Book&gt; toBoUpdated = bookRepository.findById(id);</span>
-<span class="nc bnc" id="L53" title="All 2 branches missed.">    if (toBoUpdated.isPresent()) {</span>
-<span class="nc" id="L54">      Book book = toBoUpdated.get();</span>
-<span class="nc" id="L55">      book.setTitle(bookDTO.getTitle());</span>
-<span class="nc" id="L56">      book.setAuthor(bookDTO.getAuthor());</span>
-<span class="nc" id="L57">      return convertToDto(bookRepository.save(book));</span>
-
+<span class="fc" id="L51">    Optional&lt;Book&gt; toBoUpdated = bookRepository.findById(id);</span>
+<span class="pc bpc" id="L52" title="1 of 2 branches missed.">    if (toBoUpdated.isPresent()) {</span>
+<span class="fc" id="L53">      Book book = toBoUpdated.get();</span>
+<span class="fc" id="L54">      book.setTitle(bookDTO.title());</span>
+<span class="fc" id="L55">      book.setAuthor(bookDTO.author());</span>
+<span class="fc" id="L56">      return convertToDto(bookRepository.save(book));</span>
     } else {
-<span class="nc" id="L60">      throw new RuntimeException(&quot;Update failed, book not found&quot;);</span>
+<span class="nc" id="L58">      throw new RuntimeException(&quot;Update failed, book not found&quot;);</span>
     }
   }
 }
