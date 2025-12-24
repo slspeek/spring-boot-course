@@ -1,5 +1,6 @@
 package nl.tochbedrijf.frontoffice;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -10,7 +11,6 @@ import java.util.Optional;
 import java.util.UUID;
 import nl.tochbedrijf.frontoffice.entities.Book;
 import nl.tochbedrijf.frontoffice.repositories.BookRepository;
-import org.hibernate.AssertionFailure;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,11 +29,16 @@ class FrontofficeApplicationTests {
 
   @Autowired private BookRepository bookRepository;
 
-  public final Book animalFarm =
+  final Book animalFarm =
       new Book(null, "Animal farm", "George Orwell", UUID.randomUUID().toString());
 
+  Long insertAnimalFarm() {
+    Book saved = bookRepository.save(animalFarm);
+    return saved.getId();
+  }
+
   @BeforeEach
-  public void deleteAllBeforeTests() throws Exception {
+  void deleteAllBeforeTests() throws Exception {
     bookRepository.deleteAll();
   }
 
@@ -41,14 +46,62 @@ class FrontofficeApplicationTests {
   void contextLoads() {}
 
   @Test
-  public void shouldReturnNoBooks() throws Exception {
+  void shouldReturnNoBooks() throws Exception {
     mockMvc.perform(get("/api/book")).andExpect(status().isOk()).andExpect(content().string("[]"));
   }
 
   @Test
-  public void shouldDeleteEntity() throws Exception {
-    Book saved = bookRepository.save(animalFarm);
-    Long id = saved.getId();
+  void shouldRetrieveBook() throws Exception {
+    Long id = insertAnimalFarm();
+    mockMvc
+        .perform(get(String.format("/api/book/%d", id)))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.title").value(animalFarm.getTitle()))
+        .andExpect(jsonPath("$.author").value(animalFarm.getAuthor()));
+  }
+
+  @Test
+  void shouldUpdateBook() throws Exception {
+    Long id = insertAnimalFarm();
+
+    mockMvc
+        .perform(
+            put(String.format("/api/book/%d", id))
+                .header("Content-Type", "application/json")
+                .content(
+                    String.format(
+                        "{ \"author\": \"%s\", \"title\":\"%s\"}", animalFarm.getAuthor(), "1984")))
+        .andExpect(status().isOk());
+
+    Optional<Book> updatedBook = bookRepository.findById(id);
+    assertThat(updatedBook).isPresent();
+    Book book = updatedBook.get();
+    assertThat(book.getTitle()).isEqualTo("1984");
+  }
+
+  //    @Test
+  //    void shouldNotBeAbleToUpdateBook() throws Exception {
+  //        Long id = insertAnimalFarm();
+  //
+  //        mockMvc
+  //                .perform(
+  //                        put(String.format("/api/book/%d", id + 1))
+  //                                .header("Content-Type", "application/json")
+  //                                .content(
+  //                                        String.format(
+  //                                                "{ \"author\": \"%s\", \"title\":\"%s\"}",
+  // animalFarm.getAuthor(), "1984")))
+  //                .andExpect(status().is5xxServerError());
+  //
+  //        Optional<Book> updatedBook = bookRepository.findById(id);
+  //        assertThat(updatedBook).isPresent();
+  //        Book book = updatedBook.get();
+  //        assertThat(book.getTitle()).isEqualTo(animalFarm.getTitle());
+  //    }
+
+  @Test
+  void shouldDeleteEntity() throws Exception {
+    Long id = insertAnimalFarm();
 
     mockMvc.perform(delete(String.format("/api/book/%d", id))).andExpect(status().isNoContent());
 
@@ -57,7 +110,7 @@ class FrontofficeApplicationTests {
   }
 
   @Test
-  public void shouldInsertEntity() throws Exception {
+  void shouldInsertEntity() throws Exception {
     MvcResult mvcResult =
         mockMvc
             .perform(
@@ -75,16 +128,14 @@ class FrontofficeApplicationTests {
     Long id = jsonObject.get("id").getAsLong();
 
     Optional<Book> bookFromDatabase = bookRepository.findById(id);
-    if (bookFromDatabase.isPresent()) {
-      assert bookFromDatabase.get().getAuthor().equals(animalFarm.getAuthor());
-      assert bookFromDatabase.get().getTitle().equals(animalFarm.getTitle());
-    } else {
-      throw new AssertionFailure("Expected a record, but none was found");
-    }
+    assertThat(bookFromDatabase).isPresent();
+    Book book = bookFromDatabase.get();
+    assertThat(book.getAuthor()).isEqualTo(animalFarm.getAuthor());
+    assertThat(book.getTitle()).isEqualTo(animalFarm.getTitle());
   }
 
   @Test
-  public void shouldPartiallyInsertEntity() throws Exception {
+  void shouldPartiallyInsertEntity() throws Exception {
     MvcResult mvcResult =
         mockMvc
             .perform(
@@ -102,11 +153,9 @@ class FrontofficeApplicationTests {
     Long id = jsonObject.get("id").getAsLong();
 
     Optional<Book> bookFromDatabase = bookRepository.findById(id);
-    if (bookFromDatabase.isPresent()) {
-      assert bookFromDatabase.get().getAuthor() == null;
-      assert bookFromDatabase.get().getTitle().equals("Animal farm");
-    } else {
-      throw new AssertionFailure("Expected a record, but none was found");
-    }
+    assertThat(bookFromDatabase).isPresent();
+    Book book = bookFromDatabase.get();
+    assertThat(book.getAuthor()).isNull();
+    assertThat(book.getTitle()).isEqualTo(animalFarm.getTitle());
   }
 }

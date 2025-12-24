@@ -54,7 +54,6 @@ public class BookService {
       book.setTitle(bookDTO.title());
       book.setAuthor(bookDTO.author());
       return convertToDto(bookRepository.save(book));
-
     } else {
       throw new RuntimeException("Update failed, book not found");
     }
