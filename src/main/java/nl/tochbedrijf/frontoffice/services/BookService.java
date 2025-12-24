@@ -44,16 +44,15 @@ public class BookService {
   }
 
   public Book convertToEntity(BookDTO bookDTO) {
-    return new Book(
-        bookDTO.getId(), bookDTO.getTitle(), bookDTO.getAuthor(), UUID.randomUUID().toString());
+    return new Book(bookDTO.id(), bookDTO.title(), bookDTO.author(), UUID.randomUUID().toString());
   }
 
   public BookDTO updateBook(Long id, BookDTO bookDTO) {
     Optional<Book> toBoUpdated = bookRepository.findById(id);
     if (toBoUpdated.isPresent()) {
       Book book = toBoUpdated.get();
-      book.setTitle(bookDTO.getTitle());
-      book.setAuthor(bookDTO.getAuthor());
+      book.setTitle(bookDTO.title());
+      book.setAuthor(bookDTO.author());
       return convertToDto(bookRepository.save(book));
 
     } else {
