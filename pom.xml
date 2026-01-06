@@ -10,7 +10,7 @@
     </parent>
     <groupId>nl.tochbedrijf</groupId>
     <artifactId>frontoffice</artifactId>
-    <version>v0.10.0</version>
+    <version>0.11.0</version>
     <name>frontoffice</name>
     <description>Een app voor personeels administratie. Developed by TOCH bedrijf</description>
     <url/>
