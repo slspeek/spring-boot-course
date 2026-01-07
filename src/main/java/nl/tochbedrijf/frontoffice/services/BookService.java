@@ -1,12 +1,12 @@
 package nl.tochbedrijf.frontoffice.services;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import nl.tochbedrijf.frontoffice.entities.Book;
 import nl.tochbedrijf.frontoffice.repositories.BookRepository;
 import nl.tochbedrijf.frontoffice.services.dtos.BookDTO;
+import nl.tochbedrijf.frontoffice.web.rest.BookNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -23,12 +23,10 @@ public class BookService {
   }
 
   public BookDTO getBookById(Long id) {
-    Optional<Book> book = bookRepository.findById(id);
-    if (book.isPresent()) {
-      return convertToDto(book.get());
-    } else {
-      throw new RuntimeException("Book not found");
-    }
+    return bookRepository
+        .findById(id)
+        .map(book -> new BookDTO(book.getId(), book.getTitle(), book.getAuthor()))
+        .orElseThrow(() -> new BookNotFoundException(id));
   }
 
   public BookDTO save(BookDTO bookDTO) {
@@ -36,6 +34,9 @@ public class BookService {
   }
 
   public void deleteId(Long id) {
+    if (!bookRepository.existsById(id)) {
+      throw new BookNotFoundException(id);
+    }
     bookRepository.deleteById(id);
   }
 
@@ -48,14 +49,14 @@ public class BookService {
   }
 
   public BookDTO updateBook(Long id, BookDTO bookDTO) {
-    Optional<Book> toBoUpdated = bookRepository.findById(id);
-    if (toBoUpdated.isPresent()) {
-      Book book = toBoUpdated.get();
-      book.setTitle(bookDTO.title());
-      book.setAuthor(bookDTO.author());
-      return convertToDto(bookRepository.save(book));
-    } else {
-      throw new RuntimeException("Update failed, book not found");
-    }
+    return bookRepository
+        .findById(id)
+        .map(
+            book -> {
+              book.setTitle(bookDTO.title());
+              book.setAuthor(bookDTO.author());
+              return convertToDto(bookRepository.save(book));
+            })
+        .orElseThrow(() -> new BookNotFoundException(id));
   }
 }

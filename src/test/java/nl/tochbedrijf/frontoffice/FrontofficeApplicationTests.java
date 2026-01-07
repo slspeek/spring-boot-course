@@ -6,7 +6,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import nl.tochbedrijf.frontoffice.entities.Book;
@@ -79,25 +78,20 @@ class FrontofficeApplicationTests {
     assertThat(book.getTitle()).isEqualTo("1984");
   }
 
-  //    @Test
-  //    void shouldNotBeAbleToUpdateBook() throws Exception {
-  //        Long id = insertAnimalFarm();
-  //
-  //        mockMvc
-  //                .perform(
-  //                        put(String.format("/api/book/%d", id + 1))
-  //                                .header("Content-Type", "application/json")
-  //                                .content(
-  //                                        String.format(
-  //                                                "{ \"author\": \"%s\", \"title\":\"%s\"}",
-  // animalFarm.getAuthor(), "1984")))
-  //                .andExpect(status().is5xxServerError());
-  //
-  //        Optional<Book> updatedBook = bookRepository.findById(id);
-  //        assertThat(updatedBook).isPresent();
-  //        Book book = updatedBook.get();
-  //        assertThat(book.getTitle()).isEqualTo(animalFarm.getTitle());
-  //    }
+  @Test
+  void shouldNotBeAbleToUpdateBook() throws Exception {
+    Long id = insertAnimalFarm();
+
+    mockMvc
+        .perform(
+            put(String.format("/api/book/%d", id + 1))
+                .header("Content-Type", "application/json")
+                .content(
+                    String.format(
+                        "{ \"author\": \"%s\", \"title\":\"%s\"}", animalFarm.getAuthor(), "1984")))
+        .andExpect(status().isNotFound())
+        .andExpect(content().string("Book not found with ID: " + (id + 1)));
+  }
 
   @Test
   void shouldDeleteEntity() throws Exception {
@@ -105,8 +99,13 @@ class FrontofficeApplicationTests {
 
     mockMvc.perform(delete(String.format("/api/book/%d", id))).andExpect(status().isNoContent());
 
-    List<Book> all = bookRepository.findAll();
-    assert all.isEmpty();
+    assertThat(bookRepository.findById(id)).isNotPresent();
+  }
+
+  @Test
+  void shouldNotDeleteNonExistentEntity() throws Exception {
+    Long id = insertAnimalFarm();
+    mockMvc.perform(delete(String.format("/api/book/%d", id + 1))).andExpect(status().isNotFound());
   }
 
   @Test
