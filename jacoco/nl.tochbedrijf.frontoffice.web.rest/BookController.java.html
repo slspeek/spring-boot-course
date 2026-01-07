@@ -32,15 +32,20 @@ public class BookController {
 <span class="fc" id="L32">    return bookService.getBookById(id);</span>
   }
 
+  @GetMapping(&quot;/titleContains/{title}&quot;)
+  public List&lt;BookDTO&gt; getBooksByTitleContains(@PathVariable String title) {
+<span class="fc" id="L37">    return bookService.findByTitleContains(title);</span>
+  }
+
   @DeleteMapping(&quot;/{id}&quot;)
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void deleteBook(@PathVariable Long id) {
-<span class="fc" id="L38">    bookService.deleteId(id);</span>
-<span class="fc" id="L39">  }</span>
+<span class="fc" id="L43">    bookService.deleteId(id);</span>
+<span class="fc" id="L44">  }</span>
 
   @PutMapping(&quot;/{id}&quot;)
   public BookDTO updateBook(@PathVariable Long id, @RequestBody BookDTO bookDTO) {
-<span class="fc" id="L43">    return bookService.updateBook(id, bookDTO);</span>
+<span class="fc" id="L48">    return bookService.updateBook(id, bookDTO);</span>
   }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>
