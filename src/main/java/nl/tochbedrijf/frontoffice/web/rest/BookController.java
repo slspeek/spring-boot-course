@@ -32,6 +32,11 @@ public class BookController {
     return bookService.getBookById(id);
   }
 
+  @GetMapping("/titleContains/{title}")
+  public List<BookDTO> getBooksByTitleContains(@PathVariable String title) {
+    return bookService.findByTitleContains(title);
+  }
+
   @DeleteMapping("/{id}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void deleteBook(@PathVariable Long id) {

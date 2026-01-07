@@ -59,4 +59,10 @@ public class BookService {
             })
         .orElseThrow(() -> new BookNotFoundException(id));
   }
+
+  public List<BookDTO> findByTitleContains(String title) {
+    return bookRepository.findBooksByTitleContains(title).stream()
+        .map(this::convertToDto)
+        .collect(Collectors.toList());
+  }
 }

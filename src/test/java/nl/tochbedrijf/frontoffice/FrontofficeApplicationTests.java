@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.UUID;
 import nl.tochbedrijf.frontoffice.entities.Book;
 import nl.tochbedrijf.frontoffice.repositories.BookRepository;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +58,25 @@ class FrontofficeApplicationTests {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.title").value(animalFarm.getTitle()))
         .andExpect(jsonPath("$.author").value(animalFarm.getAuthor()));
+  }
+
+  @Test
+  void shouldFindByTitleContains() throws Exception {
+    insertAnimalFarm();
+    mockMvc
+        .perform(get("/api/book/titleContains/Animal"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$[0].title").value(animalFarm.getTitle()))
+        .andExpect(jsonPath("$[0].author").value(animalFarm.getAuthor()));
+  }
+
+  @Test
+  void findByTitleContainsIsCaseSensitive() throws Exception {
+    insertAnimalFarm();
+    mockMvc
+        .perform(get("/api/book/titleContains/animal"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$", Matchers.empty()));
   }
 
   @Test
